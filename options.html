@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><title>Needle Direct settings</title
+  ><link rel="stylesheet" href="options.css" />
+  <body>
+    <main>
+      <span class="brand"
+        ><img
+          src="icons/needle.svg"
+          alt=""
+          width="36"
+          height="36"
+        />needle direct.</span
+      >
+      <h1>A new way to find.<br /><em>With your own key.</em></h1>
+      <p>
+        Paste a TypeSafe API key from
+        <a href="https://console.typesafe.ai" target="_blank" rel="noreferrer"
+          >console.typesafe.ai</a
+        >. The key stays in this browser's extension storage and is only ever
+        sent to TypeSafe's API. No backend, no middleman.
+      </p>
+      <form id="settings">
+        <label
+          >TYPESAFE API KEY<input
+            id="api-key"
+            type="password"
+            autocomplete="off"
+            required
+            placeholder="Paste TypeSafe API key" /></label
+        ><button id="test">Save &amp; verify key ↗</button>
+        <p id="status" role="status"></p>
+      </form>
+      <p><button id="remove" class="quiet">Remove saved key</button></p>
+      <hr />
+      <p>
+        Click the Needle toolbar icon on a webpage, or press
+        <strong>⌘⇧F</strong> on Mac / <strong>Ctrl+Shift+F</strong> elsewhere.
+      </p>
+      <small
+        >Search sends the page's readable passages and your query directly to
+        TypeSafe Jev. Chrome system pages and built-in PDF viewers are not
+        supported. Based on Shubham Saboo's Needle
+        (github.com/Shubhamsaboo/awesome-llm-apps).</small
+      >
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>
