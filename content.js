@@ -153,7 +153,7 @@
   }
   function update() {
     label.textContent = matches.length
-      ? `${active + 1} of ${matches.length} ${matches.length === 1 ? "connection" : "connections"}`
+      ? `${active + 1} of ${matches.length} ${matches.length === 1 ? "match" : "matches"}`
       : "No strong matches.";
     paint();
   }
@@ -162,6 +162,10 @@
     const current = ++generation;
     collect();
     clearHighlights();
+    // Snapshot so a failed search restores the previous results instead of
+    // wiping them (Unclutter: failed responses leave existing state unchanged).
+    const prevMatches = matches,
+      prevActive = active;
     matches = [];
     active = 0;
     label.classList.remove("error");
@@ -199,6 +203,10 @@
         return;
       }
       if (!closed && current === generation) {
+        // Restore the previous results; the error explains what failed.
+        matches = prevMatches;
+        active = prevActive;
+        update();
         label.textContent = error.message;
         label.classList.add("error");
       }

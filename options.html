@@ -17,8 +17,9 @@
         Paste a TypeSafe API key from
         <a href="https://console.typesafe.ai" target="_blank" rel="noreferrer"
           >console.typesafe.ai</a
-        >. The key stays in this browser's extension storage and is only ever
-        sent to TypeSafe's API. No backend, no middleman.
+        >. The key stays in this browser's extension storage, unencrypted and
+        unsynced, and is only ever sent to TypeSafe's API. No backend, no
+        middleman.
       </p>
       <form id="settings">
         <label
@@ -39,8 +40,9 @@
       </p>
       <small
         >Search sends the page's readable passages and your query directly to
-        TypeSafe Jev. Chrome system pages and built-in PDF viewers are not
-        supported. Based on Shubham Saboo's Needle
+        TypeSafe Jev. Content inside iframes and shadow DOM is not searched.
+        Chrome system pages and built-in PDF viewers are not supported. Based
+        on Shubham Saboo's Needle
         (github.com/Shubhamsaboo/awesome-llm-apps).</small
       >
     </main>
