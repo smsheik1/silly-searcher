@@ -32,7 +32,7 @@ The search logic lives in `lib/search.mjs` — pure functions with no `chrome.*`
 node --test tests/*.test.mjs
 ```
 
-`tests/search.test.mjs` covers validation boundaries, payload shape, answer parsing, the 60k byte budget (including CJK worst cases), and mocked end-to-end searches. `tests/split.test.mjs` extracts the passage splitter from the shipped `content.js` and tests it. `tests/wrapper.test.mjs` stubs `chrome.*`, imports the real service worker, and drives its message listener: untrusted senders rejected, malformed payloads never fetch, concurrent identical searches share one fetch, cache hits never re-fetch, pending markers written and cleared. `tests/package.test.mjs` checks the manifest and file references.
+`tests/search.test.mjs` covers validation boundaries, payload shape, answer parsing, the 60k byte budget (including CJK worst cases), and mocked end-to-end searches. `tests/split.test.mjs` extracts the passage splitter from the shipped `content.js` and tests it. `tests/wrapper.test.mjs` stubs `chrome.*`, imports the real service worker, and drives its message listener: untrusted senders rejected, malformed payloads never fetch, concurrent identical searches share one fetch, cache hits never re-fetch, pending markers written and cleared. `tests/range.test.mjs` loads the shipped `text-range.js` against mocked DOM globals and covers the sentence-to-range mapping: padding, split-passage chunk locating, cross-node sentences, and all rejection cases — plus direct `sentenceSpans` unit tests. `tests/package.test.mjs` checks the manifest and file references.
 
 ## What gets sent where
 
