@@ -138,8 +138,31 @@ function parseAnswers(data, blocks) {
     .sort((a, b) => b.probability - a.probability);
 }
 
+// --- Request byte budget ---
+// Jev's limits are in UTF-8 bytes, not chars: 60k CJK chars is ~180k bytes,
+// and the focus-question criteria repeat every sentence's text, so worst-case
+// payloads dwarf the char caps. (Unclutter sidesteps this with tiny bounded
+// candidates; the Chinese userscript measured in bytes for the same reason.)
+// Trim trailing blocks so the serialized request stays within budget. 60k is
+// conservative for jev-latest; the exact limit is unconfirmed.
+const PAYLOAD_BYTE_BUDGET = 60000;
+const utf8bytes = (s) => new TextEncoder().encode(s).length;
+function fitBudget(query, blocks) {
+  const size = (bs) => utf8bytes(JSON.stringify(makePayload({ query, blocks: bs })));
+  if (size(blocks) <= PAYLOAD_BYTE_BUDGET) return { query, blocks, truncated: false };
+  let lo = 1,
+    hi = blocks.length;
+  while (lo < hi) {
+    const mid = Math.ceil((lo + hi) / 2);
+    if (size(blocks.slice(0, mid)) <= PAYLOAD_BYTE_BUDGET) lo = mid;
+    else hi = mid - 1;
+  }
+  return { query, blocks: blocks.slice(0, Math.max(1, lo)), truncated: true };
+}
+
 async function searchDirect(query, blocks, key) {
   const input = validate({ query, blocks });
+  const fitted = fitBudget(input.query, input.blocks);
   const start = performance.now();
   let response;
   try {
@@ -149,7 +172,7 @@ async function searchDirect(query, blocks, key) {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(makePayload(input)),
+      body: JSON.stringify(makePayload(fitted)),
       signal: AbortSignal.timeout(45000),
     });
   } catch (e) {
@@ -179,12 +202,13 @@ async function searchDirect(query, blocks, key) {
   } catch {
     throw new SearchError("TypeSafe returned an unreadable response.", 502);
   }
-  const scores = parseAnswers(data, input.blocks);
+  const scores = parseAnswers(data, fitted.blocks);
   return {
     model: data.model || MODEL,
     scores,
     matches: scores.filter((s) => s.probability >= THRESHOLD),
     threshold: THRESHOLD,
+    truncated: fitted.truncated,
     elapsedMs: Math.round(performance.now() - start),
     usage: data.usage || null,
   };

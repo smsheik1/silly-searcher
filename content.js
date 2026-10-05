@@ -189,6 +189,7 @@
       matches = result.matches.filter((m) => blocks.some((b) => b.id === m.id));
       update();
       detail.textContent += ` · ${result.elapsedMs} ms · Bright = key sentence; pale = context.`;
+      if (result.truncated) detail.textContent += " · longest content trimmed to fit.";
     } catch (error) {
       // The extension was reloaded or updated mid-session: this dock is
       // orphaned (Unclutter tears down on ctx.onInvalidated). Close it; the
@@ -213,9 +214,11 @@
     closed = true;
     generation++;
     clearTimeout(timer);
+    clearInterval(navTimer);
     clearHighlights();
     host.remove();
     document.removeEventListener("keydown", key, true);
+    window.removeEventListener("popstate", watchNavigation);
   }
   function key(event) {
     if (event.key === "Escape") {
@@ -231,6 +234,30 @@
   }
   host.addEventListener("silly-close", close);
   document.addEventListener("keydown", key, true);
+  // SPA navigation: the injected dock outlives pushState navigation, but its
+  // results don't (Unclutter restores on location change). Invalidate without
+  // re-searching — a new search would spend money the user didn't approve.
+  // pushState/replaceState don't fire events, so poll location.href too.
+  // Hash-only changes (anchor jumps) don't invalidate.
+  let lastHref = location.href.split("#")[0],
+    navTimer = 0;
+  function watchNavigation() {
+    if (closed) return;
+    const href = location.href.split("#")[0];
+    if (href === lastHref) return;
+    lastHref = href;
+    clearTimeout(timer);
+    clearHighlights();
+    matches = [];
+    active = 0;
+    generation++;
+    blocks = [];
+    label.classList.remove("error");
+    label.textContent = "Page changed — search again.";
+    collect();
+  }
+  window.addEventListener("popstate", watchNavigation);
+  navTimer = setInterval(watchNavigation, 1000);
   $(".close").onclick = close;
   $(".settings").onclick = () =>
     chrome.runtime.sendMessage({ type: "SILLY_SETTINGS" }).catch(() => undefined);
