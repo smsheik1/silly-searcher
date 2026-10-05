@@ -126,7 +126,7 @@ test("fitBudget: small requests pass through untouched", () => {
   assert.deepEqual(fitted.blocks, blocks);
 });
 
-test("fitBudget: caps serialized payload at 60k bytes, keeps leading blocks", () => {
+test("fitBudget: caps serialized payload at the byte budget, keeps leading blocks", () => {
   const big = Array.from({ length: 160 }, (_, i) => ({
     id: `b${i}`,
     text: `Passage ${i} about refunds and fees. ` + "x".repeat(1900),
