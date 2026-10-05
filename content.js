@@ -18,6 +18,7 @@
     detail = $(".detail");
   let active = 0,
     matches = [],
+    searchTruncated = false,
     generation = 0,
     timer,
     closed = false,
@@ -50,6 +51,18 @@
     return chunks.map((c) => c.trim()).filter((c) => c.length >= 12);
   }
   // </splitPassage>
+  // <isNoise>
+  // Fragments under 12 chars are noise — except headings, which are
+  // high-signal even when tiny. "Geo-Fencing" is 11 chars: dropping it
+  // orphaned its paragraph, so a search for "geofencing" found nothing
+  // even with the section on screen. Empty text is always noise (it would
+  // fail request validation downstream). Pure function: testable in node.
+  function isNoise(elText, tagName) {
+    if (!elText) return true;
+    if (elText.length >= 12) return false;
+    return tagName !== "H1" && tagName !== "H2" && tagName !== "H3" && tagName !== "H4";
+  }
+  // </isNoise>
   function collect() {
     const candidates = [
       ...document.querySelectorAll(
@@ -72,7 +85,7 @@
       if (selected.some((other) => other !== el && el.contains(other)))
         continue;
       const elText = el.textContent.trim();
-      if (elText.length < 12) continue;
+      if (isNoise(elText, el.tagName)) continue;
       const parts = splitPassage(elText);
       if (parts.length > 1) split++;
       for (const text of parts) {
@@ -153,9 +166,14 @@
         });
   }
   function update(scroll = true) {
+    // When passages were trimmed to fit the request, "no matches" only
+    // covers the searched portion — say so instead of implying the whole
+    // page came up empty.
     label.textContent = matches.length
       ? `${active + 1} of ${matches.length} ${matches.length === 1 ? "match" : "matches"}`
-      : "No strong matches.";
+      : searchTruncated
+        ? "No strong matches in the searched portion."
+        : "No strong matches.";
     paint(scroll);
   }
   async function search() {
@@ -166,7 +184,8 @@
     // Snapshot so a failed search restores the previous results instead of
     // wiping them (Unclutter: failed responses leave existing state unchanged).
     const prevMatches = matches,
-      prevActive = active;
+      prevActive = active,
+      prevTruncated = searchTruncated;
     matches = [];
     active = 0;
     label.classList.remove("error");
@@ -192,6 +211,7 @@
       if (!result || result.error)
         throw new Error(result?.error || "Could not complete the search.");
       matches = result.matches.filter((m) => blocks.some((b) => b.id === m.id));
+      searchTruncated = !!result.truncated;
       update();
       detail.textContent += ` · ${result.elapsedMs} ms · Bright = key sentence; pale = context.`;
       if (result.truncated)
@@ -209,6 +229,7 @@
         // shouldn't move the page. The error explains what failed.
         matches = prevMatches;
         active = prevActive;
+        searchTruncated = prevTruncated;
         update(false);
         label.textContent = error.message;
         label.classList.add("error");
