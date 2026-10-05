@@ -58,6 +58,7 @@ test("makePayload: noul relevance question bound to each passage", () => {
   assert.equal(p.model, "jev-latest");
   assert.equal(p.state.search, "fees");
   assert.match(p.questions.b0.instructions, /ONLY passage b0/);
+  assert.match(p.questions.b0.instructions, /typos or misspellings/);
   assert.equal(p.questions.b0.type, "noul"); // direct Jev dialect, not "boolean"
   assert.ok(p.questions.b0.criteria.true && p.questions.b0.criteria.false);
 });
@@ -271,5 +272,5 @@ test("testConnection: ok, rejected key, unreachable", async () => {
 });
 
 test("prompt version is exported for cache invalidation", () => {
-  assert.equal(typeof PROMPT_VERSION, "number");
+  assert.equal(PROMPT_VERSION, 2); // bumped for typo-tolerance instructions
 });
