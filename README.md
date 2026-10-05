@@ -24,6 +24,16 @@ No backend. The extension calls TypeSafe's Jev model directly from your browser 
 2. Each passage gets an independent yes/no relevance judgment (`noul`) from Jev, plus a strongest-sentence pick for passages with 2+ sentences.
 3. Results are ranked by relevance probability; anything under 0.58 is dropped. Highlights map back to exact DOM ranges.
 
+## Tests
+
+The search logic lives in `lib/search.mjs` — pure functions with no `chrome.*` or DOM dependencies, so they run in plain node. `background.js` is a thin MV3 wrapper around it.
+
+```
+node --test tests/*.test.mjs
+```
+
+`tests/search.test.mjs` covers validation boundaries, payload shape, answer parsing, the 60k byte budget (including CJK worst cases), and mocked end-to-end searches. `tests/split.test.mjs` extracts the passage splitter from the shipped `content.js` and tests it. `tests/package.test.mjs` checks the manifest and file references.
+
 ## What gets sent where
 
 Each search sends the page's readable passages and your query to `https://api.typesafe.ai/v1/systemone`. Nothing else leaves the browser — no URL, no title, no cookies. Your API key lives in `chrome.storage.local`, locked to trusted extension contexts — stored unencrypted, like most extension settings. Content inside iframes and shadow DOM is not searched.

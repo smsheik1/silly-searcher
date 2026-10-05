@@ -6,7 +6,8 @@
   "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": ["https://api.typesafe.ai/*"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_title": "Find with Silly Searcher",
