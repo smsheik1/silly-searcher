@@ -101,7 +101,7 @@
     highlightStyle?.remove();
     highlightStyle = null;
   }
-  function paint() {
+  function paint(scroll = true) {
     clearHighlights();
     if (!matches.length) return;
     const ranges = [],
@@ -142,20 +142,21 @@
       CSS.highlights.set("silly-sentences", focus);
       CSS.highlights.set("silly-active", selected);
     }
-    blocks
-      .find((b) => b.id === matches[active].id)
-      ?.el.scrollIntoView({
-        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-          ? "instant"
-          : "smooth",
-        block: "center",
-      });
+    if (scroll)
+      blocks
+        .find((b) => b.id === matches[active].id)
+        ?.el.scrollIntoView({
+          behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "instant"
+            : "smooth",
+          block: "center",
+        });
   }
-  function update() {
+  function update(scroll = true) {
     label.textContent = matches.length
       ? `${active + 1} of ${matches.length} ${matches.length === 1 ? "match" : "matches"}`
       : "No strong matches.";
-    paint();
+    paint(scroll);
   }
   async function search() {
     clearTimeout(timer);
@@ -193,7 +194,8 @@
       matches = result.matches.filter((m) => blocks.some((b) => b.id === m.id));
       update();
       detail.textContent += ` · ${result.elapsedMs} ms · Bright = key sentence; pale = context.`;
-      if (result.truncated) detail.textContent += " · longest content trimmed to fit.";
+      if (result.truncated)
+        detail.textContent += " · later passages trimmed to fit the request.";
     } catch (error) {
       // The extension was reloaded or updated mid-session: this dock is
       // orphaned (Unclutter tears down on ctx.onInvalidated). Close it; the
@@ -203,10 +205,11 @@
         return;
       }
       if (!closed && current === generation) {
-        // Restore the previous results; the error explains what failed.
+        // Restore the previous results without scrolling: a failed search
+        // shouldn't move the page. The error explains what failed.
         matches = prevMatches;
         active = prevActive;
-        update();
+        update(false);
         label.textContent = error.message;
         label.classList.add("error");
       }

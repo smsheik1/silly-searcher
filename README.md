@@ -26,7 +26,7 @@ No backend. The extension calls TypeSafe's Jev model directly from your browser 
 
 ## What gets sent where
 
-Each search sends the page's readable passages and your query to `https://api.typesafe.ai/v1/systemone`. Nothing else leaves the browser — no URL, no title, no cookies. Your API key lives in `chrome.storage.local`, locked to trusted extension contexts.
+Each search sends the page's readable passages and your query to `https://api.typesafe.ai/v1/systemone`. Nothing else leaves the browser — no URL, no title, no cookies. Your API key lives in `chrome.storage.local`, locked to trusted extension contexts — stored unencrypted, like most extension settings. Content inside iframes and shadow DOM is not searched.
 
 To minimize cost: identical searches are cached and never re-billed, concurrent duplicate searches share one call, and malformed requests are rejected before any network call.
 
