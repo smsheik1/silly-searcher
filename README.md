@@ -1,4 +1,4 @@
-# Needle Direct
+# Silly Searcher
 
 Semantic find-in-page for Chrome. Press a shortcut, describe what you're looking for in plain words, and it highlights the passages that actually mean it — even when the words don't match.
 
@@ -6,15 +6,15 @@ No backend. The extension calls TypeSafe's Jev model directly from your browser 
 
 ## Install
 
-1. Download `needle-direct.zip` from the releases (or clone this repo).
+1. Download `silly-searcher.zip` from the releases (or clone this repo).
 2. Unzip it.
 3. Open `chrome://extensions`, enable **Developer mode**.
-4. **Load unpacked** → select the unzipped `needle-direct` folder.
+4. **Load unpacked** → select the unzipped `silly-searcher` folder.
 5. The options page opens on first install. Paste your TypeSafe API key, hit **Save & verify key**.
 
 ## Use
 
-- Press **Cmd+Shift+F** (Mac) or **Ctrl+Shift+F** (Linux/Windows), or click the Needle icon.
+- Press **Cmd+Shift+F** (Mac) or **Ctrl+Shift+F** (Linux/Windows), or click the Silly Searcher icon.
 - Type what you mean — "where does it mention refunds after cancellation?" — and hit Enter.
 - Matches highlight on the page; `↑` `↓` jumps between them. Bright highlight is the key sentence, pale is the surrounding passage.
 

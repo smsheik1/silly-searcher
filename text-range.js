@@ -1,7 +1,7 @@
 // Convert server offsets into a DOM range, including sentences across inline tags.
 // expectedText is usually the block's full text; for split passages it is one
 // chunk, which is located inside the element before mapping the focus span.
-globalThis.NeedleTextRange = (element, focus, expectedText) => {
+globalThis.SillyTextRange = (element, focus, expectedText) => {
   const raw = element.textContent;
   if (!focus || expectedText.slice(focus.start, focus.end) !== focus.text)
     return null;

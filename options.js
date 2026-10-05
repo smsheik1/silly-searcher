@@ -22,12 +22,12 @@ form.addEventListener("submit", async (event) => {
   setStatus("Checking key…");
   testButton.disabled = true;
   try {
-    const result = await chrome.runtime.sendMessage({ type: "NEEDLE_TEST", key });
+    const result = await chrome.runtime.sendMessage({ type: "SILLY_TEST", key });
     if (!result || !result.ok) throw new Error(result?.error || "Connection test failed.");
     await chrome.storage.local.set({ apiKey: key });
     keyInput.value = "";
     keyInput.placeholder = "Key saved — paste a new one to replace it";
-    setStatus("Key saved and verified. Open a webpage and click the Needle icon.");
+    setStatus("Key saved and verified. Open a webpage and click the Silly Searcher icon.");
   } catch (error) {
     setStatus(error instanceof Error ? error.message : "Could not verify the key.", true);
   } finally {

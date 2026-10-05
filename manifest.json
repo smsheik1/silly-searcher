@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Needle Direct",
+  "name": "Silly Searcher",
   "version": "1.2.0",
   "description": "Find ideas in the page, even when you don't know the exact words. Powered by TypeSafe Jev. No backend — calls Jev directly with your API key.",
   "permissions": ["activeTab", "scripting", "storage"],
@@ -9,7 +9,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Find with Needle",
+    "default_title": "Find with Silly Searcher",
     "default_icon": {
       "16": "icons/needle-16.png",
       "32": "icons/needle-32.png"
@@ -22,7 +22,7 @@
         "default": "Ctrl+Shift+F",
         "mac": "Command+Shift+F"
       },
-      "description": "Find with Needle"
+      "description": "Find with Silly Searcher"
     }
   },
   "icons": {

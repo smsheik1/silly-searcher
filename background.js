@@ -1,4 +1,4 @@
-// Needle Direct — semantic find with direct TypeSafe Jev calls. No backend.
+// Silly Searcher — semantic find with direct TypeSafe Jev calls. No backend.
 //
 // Based on Shubham Saboo's Needle (github.com/Shubhamsaboo/awesome-llm-apps,
 // advanced_llm_apps/needle), with the local server removed: the extension calls
@@ -162,7 +162,7 @@ async function searchDirect(query, blocks, key) {
   }
   if (!response.ok) {
     const messages = {
-      401: "TypeSafe rejected the API key. Check it in Needle settings.",
+      401: "TypeSafe rejected the API key. Check it in Silly Searcher settings.",
       402: "TypeSafe credits or account verification are required.",
       403: "This TypeSafe account cannot access Jev.",
       429: "Too many searches. Give it a moment and try again.",
@@ -293,11 +293,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ error: "Untrusted sender." });
     return;
   }
-  if (message.type === "NEEDLE_SETTINGS") {
+  if (message.type === "SILLY_SETTINGS") {
     chrome.runtime.openOptionsPage();
     return;
   }
-  if (message.type === "NEEDLE_TEST") {
+  if (message.type === "SILLY_TEST") {
     (async () => {
       try {
         await testConnection(message.key);
@@ -311,11 +311,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     })();
     return true;
   }
-  if (message.type !== "NEEDLE_SEARCH" || !sender.tab) return;
+  if (message.type !== "SILLY_SEARCH" || !sender.tab) return;
   (async () => {
     const { apiKey = "" } = await chrome.storage.local.get(["apiKey"]);
     if (!apiKey) {
-      sendResponse({ error: "Add your TypeSafe API key in Needle settings first." });
+      sendResponse({ error: "Add your TypeSafe API key in Silly Searcher settings first." });
       return;
     }
     // Validate before computing keys or spending a call: malformed payloads get
